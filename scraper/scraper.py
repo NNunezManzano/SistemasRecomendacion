@@ -1,16 +1,10 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
+#
 
 from bs4 import BeautifulSoup
 import requests
+import random
+import time
 
-'''
-'https://www.metacritic.com/'
-game = "resident-evil-4"
-'''
 class GameScraper():
     def __init__(self, url):
         self.url_base = url
@@ -23,27 +17,48 @@ class GameScraper():
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text,'html.parser')
 
-        games = bs_parse.find("td", class_ = 'clamp-summary-wrap')
+        games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
 
-        return games.a.h3.text
+        game_list = []
+
+        for game in games:
+            game_list.append(game.h3.text)
+
+        return game_list
 
     def usersReviews(self, game):
+        '''
+        endpoint = f'game/playstation-5/{game}/user-reviews?page=0'
+        html_get = self.request_session.get(self.url_base + endpoint)
+        bs_parse = BeautifulSoup(html_get.text, "html.parser")
+        paginas = bs_parse.find("li", class_ = "page last_page") #Por algún motivo a veces funciona y a veces no
 
+        cantidad_paginas = paginas.a.text
+
+        print(cantidad_paginas)
+        '''
         users_dict = {}
-        cantidad_paginas = 14
 
-        for numero_pagina in range(0,cantidad_paginas):
+        for numero_pagina in range(0,1):# for numero_pagina in range(0,cantidad_paginas):
+            time.sleep(random.randint(10, 120))
 
-            endpoint = f'game/playstation-5/{game}/user-reviews?page={numero_pagina}'
+            endpoint = f'game/playstation-5/{game}/user-reviews?page={0}'#endpoint = f'game/playstation-5/{game}/user-reviews?page={cantidad_paginas}'
             html_get = self.request_session.get(self.url_base+endpoint)
             bs_parse = BeautifulSoup(html_get.text, "html.parser")
 
             users = bs_parse.findAll("div", class_ = "review_critic")
             rates = bs_parse.findAll("div", class_ = "review_grade")
 
-            users_dict = {}
-
             for i in range(0,len(users)):
                 users_dict[users[i].div.a.text] = rates[i].div.text
 
         return users_dict
+
+    def gameName(self,game):
+
+        if ":" in game:
+            game = game.replace(":", "")
+
+        game = game.replace(" ", "-").lower()
+
+        return game

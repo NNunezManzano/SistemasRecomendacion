@@ -1,4 +1,7 @@
-#
+'''
+Funciones necsarias para scrapear las reviews de los usuarios dentro de la web https://www.metacritic.com/.
+
+'''
 
 from bs4 import BeautifulSoup
 import requests
@@ -10,6 +13,9 @@ class GameScraper():
         self.url_base = url
         self.request_session = requests.Session()
         self.request_session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.62'
+        self.request_session.headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'
+        self.request_session.headers['Accept-Encoding'] = 'gzip, deflate, br'
+        self.request_session.headers['Accept-Lenguaje'] = 'en-US,en;q=0.9'
 
     def bestGames(self):
 

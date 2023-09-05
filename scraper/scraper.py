@@ -17,9 +17,29 @@ class GameScraper():
         self.request_session.headers['Accept-Encoding'] = 'gzip, deflate, br'
         self.request_session.headers['Accept-Lenguaje'] = 'en-US,en;q=0.9'
 
-    def bestGames(self, page = 0):
-        #TODO: Extraer URL de cada juego
-        #TODO: Agregar argumento para extraer todas las paginas
+    def bestGames(self, page = 0 , all_pages = False):
+        #TODO: Extraer URL de cada juego        
+
+        if all_pages:
+            endpoint = f'browse/games/score/metascore/all/ps4/filtered?page=0'
+            html_get = self.request_session.get(self.url_base + endpoint)
+            bs_parse = BeautifulSoup(html_get.text, "html.parser")
+            paginas = bs_parse.find("li", class_ = "page last_page") 
+            cantidad_paginas = int(paginas.a.text)
+
+            game_list = []
+
+            for numero_pagina in range(0,cantidad_paginas):
+                endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={numero_pagina}'
+                html_get = self.request_session.get(self.url_base + endpoint)
+                bs_parse = BeautifulSoup(html_get.text,'html.parser')
+
+                games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
+
+                for game in games:
+                    game_list.append(game.h3.text)
+                
+            return game_list
 
         endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)

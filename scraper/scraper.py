@@ -17,9 +17,9 @@ class GameScraper():
         self.request_session.headers['Accept-Encoding'] = 'gzip, deflate, br'
         self.request_session.headers['Accept-Lenguaje'] = 'en-US,en;q=0.9'
 
-    def bestGames(self):
+    def bestGames(self, page = 0):
 
-        endpoint = f'browse/games/score/metascore/year/ps5/filtered?page=0'
+        endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text,'html.parser')
 
@@ -32,23 +32,27 @@ class GameScraper():
 
         return game_list
 
-    def usersReviews(self, game):
-        '''
-        endpoint = f'game/playstation-5/{game}/user-reviews?page=0'
+    def usersReviews(self, game, verbose = True):
+        if verbose:
+            print(f"Juego: {game}")
+        
+        endpoint = f'game/playstation-4/{game}/user-reviews?page=0'
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text, "html.parser")
-        paginas = bs_parse.find("li", class_ = "page last_page") #Por algún motivo a veces funciona y a veces no
+        paginas = bs_parse.find("li", class_ = "page last_page") 
 
-        cantidad_paginas = paginas.a.text
+        cantidad_paginas = int(paginas.a.text)
 
-        print(cantidad_paginas)
-        '''
         users_dict = {}
 
-        for numero_pagina in range(0,1):# for numero_pagina in range(0,cantidad_paginas):
-            time.sleep(random.randint(10, 120))
+        random_sleep = random.randint(5, cantidad_paginas)
 
-            endpoint = f'game/playstation-5/{game}/user-reviews?page={0}'#endpoint = f'game/playstation-5/{game}/user-reviews?page={cantidad_paginas}'
+        for numero_pagina in range(0,3):
+            
+            if verbose:
+                print(f"Pagina {numero_pagina+1}/{cantidad_paginas}")
+            
+            endpoint = f'game/playstation-4/{game}/user-reviews?page={numero_pagina}'
             html_get = self.request_session.get(self.url_base+endpoint)
             bs_parse = BeautifulSoup(html_get.text, "html.parser")
 
@@ -56,7 +60,15 @@ class GameScraper():
             rates = bs_parse.findAll("div", class_ = "review_grade")
 
             for i in range(0,len(users)):
-                users_dict[users[i].div.a.text] = rates[i].div.text
+                try:
+                    users_dict[users[i].a.text] = rates[i].div.text
+                except:
+                     users_dict[users[i].div.text] = rates[i].div.text
+            
+            if numero_pagina%random_sleep == 0:
+                time.sleep(random.randint(11, 60))    
+            
+            time.sleep(random.randint(1, 10))
 
         return users_dict
 

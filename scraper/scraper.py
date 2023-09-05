@@ -18,6 +18,7 @@ class GameScraper():
         self.request_session.headers['Accept-Lenguaje'] = 'en-US,en;q=0.9'
 
     def bestGames(self, page = 0):
+        #TODO: Extraer URL de cada juego
 
         endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)
@@ -32,7 +33,8 @@ class GameScraper():
 
         return game_list
 
-    def usersReviews(self, game, verbose = True):
+    def usersReviews(self, game, verbose = True):#TODO: Modificar para recibir URL del juego
+        
         if verbose:
             print(f"Juego: {game}")
         
@@ -61,7 +63,7 @@ class GameScraper():
 
             for i in range(0,len(users)):
                 try:
-                    users_dict[users[i].a.text] = rates[i].div.text
+                    users_dict[users[i].a.text] = rates[i].div.text #TODO: Modificar dict para que pase {Usuario:{juego:rating}}
                 except:
                      users_dict[users[i].div.text] = rates[i].div.text
             

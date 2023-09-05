@@ -23,7 +23,7 @@ else:
         scrapeados.close()
 '''
 
-#TODO: Agregar Logueo al loop
+#TODO: Agregar Logueo al loop test
 #Va a consisitir de dos archivos: 
 # - Un txt donde cada vez que termine de scrapear un juego guarde el nombre
 # - Un json donde cada vez que termine de scrapear un juego guarde el dict

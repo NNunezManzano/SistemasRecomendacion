@@ -19,6 +19,7 @@ class GameScraper():
 
     def bestGames(self, page = 0):
         #TODO: Extraer URL de cada juego
+        #TODO: Agregar argumento para extraer todas las paginas
 
         endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)
@@ -33,7 +34,9 @@ class GameScraper():
 
         return game_list
 
-    def usersReviews(self, game, verbose = True):#TODO: Modificar para recibir URL del juego
+    def usersReviews(self, game, verbose = True):
+        #TODO: Modificar para recibir URL del juego
+        #TODO: Modificar para recibir el DICT de usuarios
         
         if verbose:
             print(f"Juego: {game}")
@@ -45,7 +48,7 @@ class GameScraper():
 
         cantidad_paginas = int(paginas.a.text)
 
-        users_dict = {}
+        users_dict = {}#TODO: Borrar
 
         random_sleep = random.randint(5, cantidad_paginas)
 

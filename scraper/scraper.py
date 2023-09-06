@@ -53,7 +53,7 @@ class GameScraper():
 
         return game_dict
 
-    def usersReviews(self, game:str , endpoint:str ,verbose = True):
+    def usersReviews(self, game:str, endpoint:str, verbose = True):
         #TODO: Modificar para recibir el DICT de usuarios
         
         if verbose:
@@ -84,12 +84,12 @@ class GameScraper():
 
             for i in range(0,len(users)):
                 try:
-                    users_dict[users[i].a.text] = rates[i].div.text #TODO: Modificar dict para que pase {Usuario:{juego:rating}}
+                    users_dict[users[i].a.text] = {game:rates[i].div.text} 
                 except:
-                     users_dict[users[i].div.text] = rates[i].div.text
+                     users_dict[users[i].div.text] = {game:rates[i].div.text}
             
             if numero_pagina%random_sleep == 0:
-                time.sleep(random.randint(11, 60))    
+                time.sleep(random.randint(30, 60))    
             
             time.sleep(random.randint(1, 10))
 

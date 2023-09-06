@@ -18,10 +18,9 @@ class GameScraper():
         self.request_session.headers['Accept-Lenguaje'] = 'en-US,en;q=0.9'
 
     def bestGames(self, page = 0 , all_pages = False):
-        #TODO: Extraer URL de cada juego        
-
+        
         if all_pages:
-            endpoint = f'browse/games/score/metascore/all/ps4/filtered?page=0'
+            endpoint = f'/browse/games/score/metascore/all/ps4/filtered?page=0'
             html_get = self.request_session.get(self.url_base + endpoint)
             bs_parse = BeautifulSoup(html_get.text, "html.parser")
             paginas = bs_parse.find("li", class_ = "page last_page") 
@@ -30,18 +29,18 @@ class GameScraper():
             game_dict = {}
 
             for numero_pagina in range(0,cantidad_paginas):
-                endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={numero_pagina}'
+                endpoint = f'/browse/games/score/metascore/all/ps4/filtered?page={numero_pagina}'
                 html_get = self.request_session.get(self.url_base + endpoint)
                 bs_parse = BeautifulSoup(html_get.text,'html.parser')
 
                 games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
 
                 for game in games:
-                    game_dict[game.h3.text] = game.a.get('href')
+                    game_dict[game.h3.text] = game.find('a', class_='title').get('href')
                 
             return game_dict
 
-        endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
+        endpoint = f'/browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text,'html.parser')
 
@@ -54,14 +53,13 @@ class GameScraper():
 
         return game_dict
 
-    def usersReviews(self, game, verbose = True):
-        #TODO: Modificar para recibir URL del juego
+    def usersReviews(self, game:str , endpoint:str ,verbose = True):
         #TODO: Modificar para recibir el DICT de usuarios
         
         if verbose:
             print(f"Juego: {game}")
         
-        endpoint = f'game/playstation-4/{game}/user-reviews?page=0'
+        endpoint = f'{endpoint}/user-reviews?page=0'
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text, "html.parser")
         paginas = bs_parse.find("li", class_ = "page last_page") 
@@ -77,7 +75,7 @@ class GameScraper():
             if verbose:
                 print(f"Pagina {numero_pagina+1}/{cantidad_paginas}")
             
-            endpoint = f'game/playstation-4/{game}/user-reviews?page={numero_pagina}'
+            endpoint = f'{endpoint}/user-reviews?page={numero_pagina}'
             html_get = self.request_session.get(self.url_base+endpoint)
             bs_parse = BeautifulSoup(html_get.text, "html.parser")
 

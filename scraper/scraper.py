@@ -53,8 +53,7 @@ class GameScraper():
 
         return game_dict
 
-    def usersReviews(self, game:str, endpoint:str, verbose = True):
-        #TODO: Modificar para recibir el DICT de usuarios
+    def usersReviews(self, users_dict, game:str, endpoint:str, verbose = True):
         
         if verbose:
             print(f"Juego: {game}")
@@ -65,8 +64,6 @@ class GameScraper():
         paginas = bs_parse.find("li", class_ = "page last_page") 
 
         cantidad_paginas = int(paginas.a.text)
-
-        users_dict = {}#TODO: Borrar
 
         random_sleep = random.randint(5, cantidad_paginas)
 

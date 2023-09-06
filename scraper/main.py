@@ -23,25 +23,44 @@ else:
         scrapeados.close()
 '''
 
-#TODO: Agregar Logueo al loop test
-#Va a consisitir de dos archivos: 
-# - Un txt donde cada vez que termine de scrapear un juego guarde el nombre
-# - Un json donde cada vez que termine de scrapear un juego guarde el dict
-
-url = 'https://www.metacritic.com/'
+url = 'https://www.metacritic.com'
 
 gs = GameScraper(url)
 
-bg_list = gs.bestGames()#puedo pasar numero de pagina como argumento (page=#)
+bg_dict = gs.bestGames()#puedo pasar numero de pagina como argumento (page=#)
 
-game_dict = {}
-for i in ([0,1]):
-    game_name = gs.gameName(bg_list[i])
-    game_dict[game_name] = gs.usersReviews(game_name)
-    with open('./reviews.json', 'a') as f:
-        json_string = json.dumps(game_dict)
-        f.write(json_string)
+if not os.path.exists('./reviews.json'):
+    game_dict = {}
 
+else:
+    with open('./reviews.json', 'r') as json_reviews:
+        game_dict = json.load(json_reviews)
+
+if os.path.exists('./scraped.txt'):
+    with open('./scraped.txt', 'r') as scraped_txt:
+        games_ls = scraped_txt.readlines()
+        last_scraped = games_ls[-1].replace("\n","")
+else:
+    with open('./scraped.txt', 'w') as scraped_txt:
+        scraped_txt.writelines(('Lista de juegos\n'))
+
+
+for (game_name,endpoint) in zip(bg_dict.keys(),bg_dict.values()):
+    #TODO: Agregar logica para iniciar desde el ultimo scrapeado    
+    game = gs.gameName(game_name)
+    game_dict = gs.usersReviews(game_dict,game,endpoint)
+
+    # Open the same JSON file for writing (overwrite)
+    with open('./reviews.json', 'w') as json_reviews:
+        # Write the updated dictionary back to the JSON file
+        json.dump(game_dict, json_reviews, indent=4)
+
+    with open('./scraped.txt', 'a') as scraped_txt:
+        scraped_txt.writelines((str(game)+'\n'))
+    
+
+
+    
 
     
 
@@ -64,7 +83,7 @@ bs = BeautifulSoup(req.text, 'html.parser')
 print(bs.find('table', {'class':'table-striped'}).get_text)
 
 
-
+#REVIEWS
 url = 'https://www.metacritic.com/'
 endpoint = f'game/playstation-4/red-dead-redemption-2/user-reviews?page=0'#endpoint = f'game/playstation-5/{game}/user-reviews?page={cantidad_paginas}'
 html_get = request_session.get(url+endpoint)
@@ -76,7 +95,18 @@ print(rates[100].div.text)
 print(rates[101].div.text)
 
 
-'''
 
+#BEST GAMES
+url = 'https://www.metacritic.com/'
+endpoint = 'browse/games/score/metascore/all/ps4/filtered?page=0'
+
+
+html_get = request_session.get(url + endpoint)
+bs_parse = BeautifulSoup(html_get.text,'html.parser')
+
+games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
+
+print(games[0].find('a', class_='title').get('href'))
+'''
 
 

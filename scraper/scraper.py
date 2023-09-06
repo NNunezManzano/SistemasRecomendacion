@@ -49,11 +49,11 @@ class GameScraper():
         game_dict = {}
 
         for game in games:
-            game_dict[game.h3.text] = game.a.get('href')
+            game_dict[game.h3.text] = game.find('a', class_='title').get('href')
 
         return game_dict
 
-    def usersReviews(self, users_dict, game:str, endpoint:str, verbose = True):
+    def usersReviews(self, users_dict:dict, game:str, endpoint:str, verbose = True):
         
         if verbose:
             print(f"Juego: {game}")
@@ -67,7 +67,7 @@ class GameScraper():
 
         random_sleep = random.randint(5, cantidad_paginas)
 
-        for numero_pagina in range(0,3):
+        for numero_pagina in range(0,cantidad_paginas):
             
             if verbose:
                 print(f"Pagina {numero_pagina+1}/{cantidad_paginas}")
@@ -85,7 +85,8 @@ class GameScraper():
                 except:
                      users_dict[users[i].div.text] = {game:rates[i].div.text}
             
-            if numero_pagina%random_sleep == 0:
+            
+            if numero_pagina%random_sleep == 0 and numero_pagina != 0:
                 time.sleep(random.randint(30, 60))    
             
             time.sleep(random.randint(1, 10))

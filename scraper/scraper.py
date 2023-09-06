@@ -27,7 +27,7 @@ class GameScraper():
             paginas = bs_parse.find("li", class_ = "page last_page") 
             cantidad_paginas = int(paginas.a.text)
 
-            game_list = []
+            game_dict = {}
 
             for numero_pagina in range(0,cantidad_paginas):
                 endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={numero_pagina}'
@@ -37,9 +37,9 @@ class GameScraper():
                 games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
 
                 for game in games:
-                    game_list.append(game.h3.text)
+                    game_dict[game.h3.text] = game.a.get('href')
                 
-            return game_list
+            return game_dict
 
         endpoint = f'browse/games/score/metascore/all/ps4/filtered?page={page}'
         html_get = self.request_session.get(self.url_base + endpoint)
@@ -47,12 +47,12 @@ class GameScraper():
 
         games = bs_parse.findAll("td", class_ = 'clamp-summary-wrap')
 
-        game_list = []
+        game_dict = {}
 
         for game in games:
-            game_list.append(game.h3.text)
+            game_dict[game.h3.text] = game.a.get('href')
 
-        return game_list
+        return game_dict
 
     def usersReviews(self, game, verbose = True):
         #TODO: Modificar para recibir URL del juego

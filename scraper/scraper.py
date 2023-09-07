@@ -52,6 +52,28 @@ class GameScraper():
             game_dict[game.h3.text] = game.find('a', class_='title').get('href')
 
         return game_dict
+    
+    def gameDetails(self, game, endpoint):
+        endpoint = f'{endpoint}/details'
+        html_get = self.request_session.get(self.url_base + endpoint)
+        bs_parse = BeautifulSoup(html_get.text, "html.parser")
+        details = bs_parse.findAll("div", class_ = "product_details") 
+
+        detail = details[1]
+
+        titles = detail.findAll("th")
+        values = detail.findAll("td")
+
+        details_dict = {}
+
+        for title,value in zip(titles,values):
+            title_t = title.text.replace(":","")
+            value_t = value.text.replace("\r\n","").replace(" ","").split(",")
+            details_dict[title_t]=value_t
+
+        return details_dict
+            
+
 
     def usersReviews(self, users_dict:dict, game:str, endpoint:str, verbose = True):
         
@@ -63,12 +85,23 @@ class GameScraper():
         bs_parse = BeautifulSoup(html_get.text, "html.parser")
         paginas = bs_parse.find("li", class_ = "page last_page") 
 
-        cantidad_paginas = int(paginas.a.text)
+        cantidad_paginas = 0
 
-        random_sleep = random.randint(5, cantidad_paginas)
+        if paginas != None:
+            cantidad_paginas = int(paginas.a.text)
 
+        random_sleep = 99
+
+        if cantidad_paginas > 5 and cantidad_paginas != 0:
+
+            random_sleep = random.randint(5, cantidad_paginas)
+        
+        if cantidad_paginas > 50:
+
+            cantidad_paginas = 50
+        
         for numero_pagina in range(0,cantidad_paginas):
-            
+
             if verbose:
                 print(f"Pagina {numero_pagina+1}/{cantidad_paginas}")
             

@@ -81,9 +81,18 @@ class GameScraper():
 
             for i in range(0,len(users)):
                 try:
-                    users_dict[users[i].a.text] = {game:rates[i].div.text} 
-                except:
-                     users_dict[users[i].div.text] = {game:rates[i].div.text}
+                    user = users[i].a.text
+                except:    
+                    user = users[i].div.text
+                
+                rate = rates[i].div.text
+
+                if user in users_dict.keys():
+                    users_dict[user][game] = rate
+
+                else:
+                    users_dict[user] = {game:rate} 
+                    
             
             
             if numero_pagina%random_sleep == 0 and numero_pagina != 0:

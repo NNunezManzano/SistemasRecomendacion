@@ -53,7 +53,9 @@ class GameScraper():
 
         return game_dict
     
-    def gameDetails(self, game, endpoint):
+    def gameDetails(self, game, endpoint, verbose = True):
+        if verbose:
+            print(f'Juego: {game}')
         endpoint = f'{endpoint}/details'
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text, "html.parser")

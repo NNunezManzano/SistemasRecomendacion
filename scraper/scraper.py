@@ -136,6 +136,19 @@ class GameScraper():
             time.sleep(random.randint(1, 10))
 
         return users_dict
+    
+    def allReviews(self, user:str):
+        endpoint = f'/user/{user}'
+        html_get = self.request_session.get(self.url_base + endpoint)
+        bs_parse = BeautifulSoup(html_get.text, "html.parser")
+        allreviews = bs_parse.findAll("div", class_="review_section review_data") 
+
+        for review in allreviews:
+            if 'playstation-4' in review.find("div", class_="product_title").a.get("href"):
+                game = review.find("div", class_="product_title").text
+                rating = review.find("div", class_="review_score").div.text
+                return {game:rating}
+
 
     def gameName(self,game):
 
@@ -145,3 +158,5 @@ class GameScraper():
         game = game.replace(" ", "-").lower()
 
         return game
+    
+

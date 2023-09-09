@@ -142,13 +142,20 @@ class GameScraper():
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text, "html.parser")
         allreviews = bs_parse.findAll("div", class_="review_section review_data") 
-
+        
+        reviews_dict = {}
+        endpoint_dict ={}
+        
         for review in allreviews:
             if 'playstation-4' in review.find("div", class_="product_title").a.get("href"):
-                game = review.find("div", class_="product_title").text
+                game_name = review.find("div", class_="product_title").text
+                game = self.gameName(game_name)
                 rating = review.find("div", class_="review_score").div.text
-                return {game:rating}
-
+                endpoint = review.find("div", class_="product_title").a.get("href")
+                reviews_dict[game] = rating
+                endpoint_dict[game] = endpoint
+        
+        return reviews_dict, endpoint_dict
 
     def gameName(self,game):
 

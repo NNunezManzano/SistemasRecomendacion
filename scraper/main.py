@@ -154,6 +154,9 @@ def get_allReviews():
     for user in users_list:
         
         user_reviews,game_endpoint = gs.allReviews(user)
+        
+        for game, review in user_reviews.items():
+            users_dict[user][game] = review
         #TODO:Agregar las nuevas reviews al dict general "users_dict"
 
         for game, endpoint in game_endpoint.items():

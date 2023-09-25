@@ -5,6 +5,8 @@
 
 import json
 from scraper import GameScraper
+import scraper_api as scapi
+
 import os
 import time
 import random
@@ -116,17 +118,19 @@ def get_details(bg_dict:dict):
         
         time.sleep(random.randint(1, 10))
 
-def get_allReviews():
+def get_allReviews(verbose = True): #TODO: Se modifico toda la pagina hay que modificar esta parte del codigo
     if not os.path.exists('./reviews.json'):
         return "No hay usuarios para buscar."        
 
     else:
         with open('./reviews.json', 'r') as json_reviews:
+            
             users_dict = json.load(json_reviews)
             users_list = list(users_dict.keys())    
 
     if os.path.exists('./u_scraped.txt'):
         with open('./u_scraped.txt', 'r') as scraped_txt:
+            
             users_ls = scraped_txt.readlines()
             last_scraped = users_ls[-1].replace("\n","")
 
@@ -149,27 +153,52 @@ def get_allReviews():
         with open('./u_scraped.txt', 'w') as scraped_txt:
             scraped_txt.writelines(('Usuarios scrapeados\n'))
 
-    games_reviewed = {}
+    with open('./gd_scraped.txt', 'r') as details_txt:
+        rawdetails_ls = details_txt.readlines()
+        details_ls = []
+
+        for detail in rawdetails_ls:
+            details_ls.append(detail.replace("\n",""))
+
+
+    pending_details = {}
+
+    cantidad_total = len(users_list)
+
+    i = 1
 
     for user in users_list:
         
-        user_reviews,game_endpoint = gs.allReviews(user)
+        if verbose:
+            print(f'{user} - {i}/{cantidad_total}' )
         
-        for game, review in user_reviews.items():
-            users_dict[user][game] = review
-        #TODO:Agregar las nuevas reviews al dict general "users_dict"
+        i += 1
 
-        for game, endpoint in game_endpoint.items():
-            games_reviewed[game] = endpoint
-        #TODO: Guardar en JSON games_reviewed cada vez que termina el loop
+        json_api = scapi.allReviewsAPI(user)
+        
+        user_reviews,game_endpoint = scapi.allReviews(json_api, details_ls)
+        
+        if user_reviews != {}:
+            for game, review in user_reviews.items():
+                users_dict[user][game] = str(review)
+        
+            for game, endpoint in game_endpoint.items():
+                if game not in details_ls:
+            
+                    if verbose:
+                        print(game)
 
-        with open('./reviews_2.json', 'w') as json_reviews:
-            json.dump(users_dict, json_reviews, indent=4)
+                    pending_details[game] = endpoint
+        
+            with open('./reviews_2.json', 'w') as json_reviews:
+                json.dump(users_dict, json_reviews, indent=4)
 
-        with open('./u_scraped.txt', 'a') as scraped_txt:
-            scraped_txt.writelines((str(user)+'\n'))
-   
-    with open('./pending_details.json', 'w') as json_details:
-            json.dump(games_reviewed, json_details, indent=4)
+            with open('./u_scraped.txt', 'a') as scraped_txt:
+                scraped_txt.writelines((str(user)+'\n'))
+        
+            with open('./pending_details.json', 'w') as pending_details_json:
+                json.dump(pending_details, pending_details_json, indent=4)
+        
+        time.sleep(random.randint(2,7))
 
-get_details(bg_dict)
+get_allReviews()

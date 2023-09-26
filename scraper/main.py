@@ -1,6 +1,6 @@
 '''
 
-
+TODO: Agregar comentarios en el codigo
 '''
 
 import json
@@ -66,7 +66,7 @@ def get_reviews(bg_dict:dict):
         with open('./r_scraped.txt', 'a') as scraped_txt:
             scraped_txt.writelines((str(game)+'\n'))
 
-def get_details(bg_dict:dict):
+def get_details(bg_dict:dict):#TODO: Modificaciones en gamedetails por cambios en la pagina
     if not os.path.exists('./game_details.json'):
         game_dict = {}
 

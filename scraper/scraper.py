@@ -1,6 +1,7 @@
 '''
 Funciones necsarias para scrapear las reviews de los usuarios dentro de la web https://www.metacritic.com/.
 
+TODO: Agregar comentarios en el codigo
 '''
 
 from bs4 import BeautifulSoup

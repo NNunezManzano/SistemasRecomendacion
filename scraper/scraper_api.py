@@ -1,5 +1,6 @@
 """
-This site use an API with POST method to get the listed companies.
+Funciones necesarias para scrapear a traves de la API del sitio
+TODO: Agregar comentarios en el codigo
 """
 from scraper import GameScraper
 
@@ -64,3 +65,58 @@ def allReviewsAPI(user):
     else:
         # If the request was not successful, print an error message
         print(f"Error: {response.status_code} - {response.text}")
+
+#TODO: agregar nueva funcion que obtenga detalle de los juegos.
+'''
+# GAMES DETAILS
+# Devuelve nombre del juego y detalles en formato dict
+"red-dead-redemption-2": {
+        "Rating": [
+            "M"
+        ],
+        "Developer": [
+            "RockstarGames"
+        ],
+        "Genre(s)": [
+            "ActionAdventure",
+            "Open-World"
+        ],
+        "Number of Online Players": [
+            "Upto32Players"
+        ]
+    },
+
+url = f"https://www.metacritic.com/game/hitman-definitive-edition/"
+html_raw = request_session.get(url)
+bs_parse = BeautifulSoup(html_raw.text, "html.parser")
+nodes = bs_parse.find( 'div',class_ = 'c-productionDetailsGame')
+
+containers = nodes.findAll('div', class_='c-gameDetails_sectionContainer')
+
+containers[2].a.span.text
+
+
+i = 0
+
+for container in containers:
+    
+    if i == 0:
+        platforms_ls = []
+        plataformas = container.find('div', class_='c-gameDetails_Platforms').findAll('li')
+        for plataforma in plataformas:
+            platforms_ls.append(plataforma.text.replace("\n","").replace(" ",""))
+
+        release_date = containers[0].find('div', class_='c-gameDetails_ReleaseDate').findAll('span')[1].text
+    
+    if i == 1:
+        
+        dev_ls = []
+        developers = container.find('div', class_='c-gameDetails_Developer').findAll('ul')
+        for developer in developers:
+            dev_ls.append(developer.text.replace("\n","").replace(" ",""))
+
+        distribuidor = container.find('div', class_='c-gameDetails_Distributor').findAll('span')[1].text
+
+    if i == 2:
+        genero = containers[2].a.span.text.replace("\n","").replace(" ","")
+'''

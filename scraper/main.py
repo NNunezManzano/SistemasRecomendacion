@@ -66,7 +66,8 @@ def get_reviews(bg_dict:dict):
         with open('./r_scraped.txt', 'a') as scraped_txt:
             scraped_txt.writelines((str(game)+'\n'))
 
-def get_details(bg_dict:dict):#TODO: Modificaciones en gamedetails por cambios en la pagina
+def get_details(bg_dict:dict, verbose = True):
+    
     if not os.path.exists('./game_details.json'):
         game_dict = {}
 
@@ -83,9 +84,9 @@ def get_details(bg_dict:dict):#TODO: Modificaciones en gamedetails por cambios e
 
             scrape_games = False
 
-            for game_name, url in bg_dict.items():
+            for game, url in bg_dict.items():
 
-                game = gs.gameName(game_name)
+                #game = gs.gameName(game_name)
 
                 if scrape_games:
                     games_to_scrape[game] = url
@@ -100,25 +101,43 @@ def get_details(bg_dict:dict):#TODO: Modificaciones en gamedetails por cambios e
         with open('./gd_scraped.txt', 'w') as scraped_txt:
             scraped_txt.writelines(('Lista de juegos\n'))
 
+    game_list = list(bg_dict.keys())
 
+    cantidad_juegos = len(game_list)
 
-    for (game_name,endpoint) in bg_dict.items():
+    g = 1
+    
+    for (game,endpoint) in bg_dict.items():
+
+        if verbose:
+            print(f'{game} - {g}/{cantidad_juegos}')
+            g += 1
         
-        game = gs.gameName(game_name)
-        details_dict = gs.gameDetails(game,endpoint)
+        #game = gs.gameName(game_name)
+        details_dict = gs.gameDetails(game,endpoint, verbose=False) 
 
-        game_dict[game] = details_dict
+        try:
+            sin_detalle = details_dict['Sin detalle'] 
+            with open('./gd_scraped.txt', 'a') as scraped_txt:
+                scraped_txt.writelines(('Sin detalle' + str(sin_detalle) + '\n'))
         
-        with open('./game_details.json', 'w') as json_reviews:
+        except:
+            game_dict[game] = details_dict
+
+            with open('./game_details.json', 'w') as json_reviews:
             
-            json.dump(game_dict, json_reviews, indent=4)
+                json.dump(game_dict, json_reviews, indent=4)
 
-        with open('./gd_scraped.txt', 'a') as scraped_txt:
-            scraped_txt.writelines((str(game)+'\n'))
+            with open('./gd_scraped.txt', 'a') as scraped_txt:
+                scraped_txt.writelines((str(game)+'\n'))
+        
         
         time.sleep(random.randint(1, 10))
+    
 
-def get_allReviews(verbose = True): #TODO: Se modifico toda la pagina hay que modificar esta parte del codigo
+    
+
+def get_allReviews(verbose = True): 
     if not os.path.exists('./reviews.json'):
         return "No hay usuarios para buscar."        
 
@@ -190,7 +209,7 @@ def get_allReviews(verbose = True): #TODO: Se modifico toda la pagina hay que mo
 
                     pending_details[game] = endpoint
         
-            with open('./reviews_2.json', 'w') as json_reviews:
+            with open('./reviews.json', 'w') as json_reviews:
                 json.dump(users_dict, json_reviews, indent=4)
 
             with open('./u_scraped.txt', 'a') as scraped_txt:
@@ -201,4 +220,8 @@ def get_allReviews(verbose = True): #TODO: Se modifico toda la pagina hay que mo
         
         time.sleep(random.randint(2,7))
 
-get_allReviews()
+
+if __name__ == '__main__':
+    with open('./pending_details.json', 'r') as pend_details:
+            bg_dict = json.load(pend_details)
+    get_details(bg_dict)

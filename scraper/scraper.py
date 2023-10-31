@@ -54,25 +54,91 @@ class GameScraper():
 
         return game_dict
     
-    def gameDetails(self, game, endpoint, verbose = True):
+    def gameDetails(self, game, endpoint='default', verbose = True):#TODO: agregar nueva funcion que obtenga detalle de los juegos.
+        
         if verbose:
             print(f'Juego: {game}')
-        endpoint = f'{endpoint}/details'
+        
+        if endpoint == 'default':
+            endpoint = f'/game/{game}/'
+
         html_get = self.request_session.get(self.url_base + endpoint)
         bs_parse = BeautifulSoup(html_get.text, "html.parser")
-        details = bs_parse.findAll("div", class_ = "product_details") 
+        nodes = bs_parse.find( 'div',class_ = 'c-productionDetailsGame')
 
-        detail = details[1]
+        try:
+            imagen = bs_parse.find( 'picture',class_ = 'c-cmsImage').img.get('src')
+        except:
+            imagen = ''
+        try:
+            containers = nodes.findAll('div', class_='c-gameDetails_sectionContainer')
+            summary = nodes.find('span', class_ = 'c-productionDetailsGame_description').text
+        
+        except:
+             details_dict = {"Sin detalle":game}
+             return details_dict
 
-        titles = detail.findAll("th")
-        values = detail.findAll("td")
+        try:
+            rating = nodes.find('div', class_ = 'c-productionDetailsGame_esrb_title').span.text[nodes.find('div', class_ = 'c-productionDetailsGame_esrb_title').span.text.find("Rated")+6:].replace('\n','').replace(' ','')
+        
+        except:
+            print(f'{game} sin rating')
+            rating = ''
 
-        details_dict = {}
+        i = 0
 
-        for title,value in zip(titles,values):
-            title_t = title.text.replace(":","")
-            value_t = value.text.replace("\r\n","").replace(" ","").split(",")
-            details_dict[title_t]=value_t
+        for container in containers:
+
+            if i == 0:
+                try:
+                    platforms_ls = []
+                    plataformas = container.find('div', class_='c-gameDetails_Platforms').findAll('li')
+                    for plataforma in plataformas:
+                        platforms_ls.append(plataforma.text.replace("\n","").replace(" ",""))
+                except:
+                    platforms_ls = ''
+                
+                try:
+                    release_date = containers[0].find('div', class_='c-gameDetails_ReleaseDate').findAll('span')[1].text
+                except:
+                    release_date = ''
+
+            if i == 1:
+                try:
+                    dev_ls = []
+                    developers = container.find('div', class_='c-gameDetails_Developer').findAll('ul')
+                    for developer in developers:
+                        dev_ls.append(developer.text.replace("\n","").replace(" ",""))
+                except:
+                    dev_ls = ''
+                
+                try:
+                    distribuidor = container.find('div', class_='c-gameDetails_Distributor').findAll('span')[1].text
+                except:
+                    distribuidor = ''
+
+            if i == 2:
+                try:
+                    genero = containers[2].a.span.text.replace("\n","").replace(" ","")
+                except:
+                    genero = ''
+            
+            if len(containers) < 3:
+                genero = ''
+
+
+            i += 1
+
+        details_dict = {
+            'Imagen'        : imagen,
+            'Resumen'       : summary,
+            'Rating'        : rating,
+            'Plataformas'   : platforms_ls,
+            'Lanzamiento'   : release_date,
+            'Developer(s)'  : dev_ls,
+            'Distribuidor'  : distribuidor,
+            'Genero'        : genero
+        }
 
         return details_dict
             

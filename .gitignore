@@ -1,5 +1,6 @@
 /scraper/test.py
 /scraper/.idea
 /scraper/test.ipynb
-
-
+*.csv
+*__pycache__
+*.db

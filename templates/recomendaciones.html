@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+  		<title>Recomendaciones</title>
+	</head>
+
+	<body class="px-6 py-4">
+		<form method="post">
+			<div class="grid grid-cols-3 gap-4 mb-4">
+				{% for juego in juegos %}
+				<div class="border shadow-lg p-4 rounded flex flex-col">
+					<div class="flex">
+						<img src="{{ juego.Imagen }}" class="mr-4 w-32 border" />
+						<div class="flex flex-col">
+							<h3 class="text-xl font-semibold mb-2">{{ juego.titulo|title }}</h3>
+							<small class="mb-2">{{ juego.autor|title }} - {{ juego.genero }} - {{ juego.editorial|title }}</small>
+							{% if juego.resumen %}
+							<p class="mb-2">{{ juego.resumen|truncate }}</p>
+							{% endif %}
+						</div>
+					</div>
+					<div class="ml-auto text-sm">
+						<label
+							>Mi puntuación:
+							<select name="{{juego.id_juego}}" class="p-1 border">
+								<option value="0" selected></option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+							</select>
+						</label>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="flex justify-benween">
+				<small> usuario: {{ id_usuario }} - cant. valorados: {{ cant_valorados }} - cant. ignorados: {{ cant_ignorados}} - <a href="/reset" class="px-2 py-1 bg-teal-500 text-sm text-white rounded-xl">reset</a></small>
+				<button type="submit" class="border bg-teal-500 hover:bg-teal-700 text-white text-lg font-bold px-4 py-2 ml-auto">Más recomendaciones</button>
+			</div>
+		</form>
+	  
+	</body>
+</html>

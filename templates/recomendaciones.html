@@ -7,25 +7,31 @@
   		<title>Recomendaciones</title>
 	</head>
 
-	<body class="px-6 py-4">
+	<body class="px-6 py-4" style="background-image: url('https://wallpapers.com/images/hd/4k-gaming-assassin-s-creed-syndicate-2nyg4foa3fa3130l.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 		<form method="post">
 			<div class="grid grid-cols-3 gap-4 mb-4">
 				{% for juego in juegos %}
-				<div class="border shadow-lg p-4 rounded flex flex-col">
-					<div class="flex">
-						<img src="{{ juego.Imagen }}" class="mr-4 w-32 border" />
-						<div class="flex flex-col">
-							<h3 class="text-xl font-semibold mb-2">{{ juego.titulo|title }}</h3>
-							<small class="mb-2">{{ juego.autor|title }} - {{ juego.genero }} - {{ juego.editorial|title }}</small>
-							{% if juego.resumen %}
-							<p class="mb-2">{{ juego.resumen|truncate }}</p>
-							{% endif %}
+				<div class=" shadow-lg p-4 rounded flex flex-col bg-emerald-100 bg-opacity-75"  >
+					<div class="relative">
+						<img src="{{ juego.Imagen }}" class="mr-4 w-32 h-32  object-cover" />
+						<div class="absolute bottom-0 left-0 bg-black text-white p-2 rounded-br-xl">
+							Puntuacion: {{ juego.rating_avg }}
 						</div>
 					</div>
+					<div class="flex flex-col">
+						<h3 class="text-xl font-semibold mb-2">{{ juego.game|title }}</h3>
+						<small class="mb-2">{{ juego.Distribuidor|title }} | {{ juego.genero }} | {{ juego.Rating|title }}</small>
+						{% if juego.resumen %}
+						<p class="mb-2">{{ juego.resumen|truncate }}</p>
+						{% endif %}
+							
+					</div>
+						
+					
 					<div class="ml-auto text-sm">
 						<label
 							>Mi puntuación:
-							<select name="{{juego.id_juego}}" class="p-1 border">
+							<select name="{{juego.id_juego}}" class="p-1 rounded-xl">
 								<option value="0" selected></option>
 								<option value="1">1</option>
 								<option value="2">2</option>
@@ -44,8 +50,8 @@
 				{% endfor %}
 			</div>
 			<div class="flex justify-benween">
-				<small> usuario: {{ id_usuario }} - cant. valorados: {{ cant_valorados }} - cant. ignorados: {{ cant_ignorados}} - <a href="/reset" class="px-2 py-1 bg-teal-500 text-sm text-white rounded-xl">reset</a></small>
-				<button type="submit" class="border bg-teal-500 hover:bg-teal-700 text-white text-lg font-bold px-4 py-2 ml-auto">Más recomendaciones</button>
+				<small><a class="px-2 py-1 bg-cyan-500 bg-opacity-75 text-sm text-white rounded-xl"> Usuario: {{ id_usuario }} - Valorados: {{ cant_valorados }} - Ignorados: {{ cant_ignorados}}</a>  <a href="/reset" class="px-2 py-1 bg-cyan-500 hover:bg-cyan-700 bg-opacity-75 text-sm text-white rounded-xl">Reset</a></small>
+				<button type="submit" name="mas_recomendaciones" class="bg-cyan-500 hover:bg-cyan-700 text-white text-lg font-bold px-4 py-2 ml-auto rounded-xl">Más recomendaciones</button>
 			</div>
 		</form>
 	  

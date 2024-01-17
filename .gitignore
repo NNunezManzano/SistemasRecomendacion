@@ -1,6 +1,10 @@
 /scraper/test.py
 /scraper/.idea
 /scraper/test.ipynb
+/scraper/imgselenium.py
 *.csv
 *__pycache__
 *.db
+*.ipynb
+*.json
+.env
